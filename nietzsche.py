@@ -32,7 +32,7 @@ class Analysis:
 	def load(self):
 		""" Loads data from the filename, should be called before any other method. """
 		npfile = self.filename.replace('.txt','')
-		if os.path.isfile(npfile+'_appearances.npy'):
+		if os.path.isfile(npfile+'_probabilities.npy'):
 			self.probabilities = numpy.load(npfile+'_probabilities.npy')
 		else:
 			self.appearances = numpy.zeros( (self.t, self.t) )
