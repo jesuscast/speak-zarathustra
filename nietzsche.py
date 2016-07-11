@@ -101,12 +101,10 @@ class Analysis:
 		return self.unique_words[ int(self.probabilities[int(i)][int(k)]) ], self.probabilities[int(i)][int(k)]
 	def speak(self, n, start = None):
 		""" Obtains n words, using start as the initial word """
-		if not start:
+		if (not start) or (start not in self.unique_words):
 			k = int( self.t * random.random() )
 			k = k if k != self.t else self.t-1
 			start = self.unique_words[k]
-		if start not in self.unique_words:
-			print 'The word must exists in the list of words'
 		final = []
 		current_word = start
 		current_index = self.unique_words.index(start)
@@ -129,7 +127,7 @@ class Analysis:
 					current_index = new_index
 		return ' '.join(final)
 	def speakZarathustra(self, n, start = None):
-		""" Alias for speak() """
+		""" Alias for speak() """	
 		return self.speak(n, start)
 
 
