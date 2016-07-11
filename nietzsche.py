@@ -6,28 +6,31 @@ import random
 import numpy
 
 def strip_non_ascii(string):
-	''' Returns the string without non ASCII characters'''
+	""" Returns the string without non ASCII characters """
 	stripped = (c for c in string if 0 < ord(c) < 127)
 	return ''.join(stripped)
 
 def scrambled(orig):
+	""" Scramble a dictionary """
 	dest = orig[:]
 	random.shuffle(dest)
 	return dest
 
 class Analysis:
 	def __init__(self, filename):
+		""" Opens the file and cleans it, then finds unique words """
 		self.filename = filename
 		tmp_f = open(self.filename, 'r')
 		self.s = tmp_f.read()
 		tmp_f.close()
+		# This contains all of the words as a list.
 		self.cleaned = [ n.lower() for n in strip_non_ascii(self.s).replace("\n","").split(" ") ]
+		# Self explanatory.
 		self.unique_words = list(set(self.cleaned))
-		# Now generate an array of len(self.unique_words) X len(self.unique_words)
-		# to contain the probability of each word being followed by another word.
+		# Length so I don't have to reference multiple time later.
 		self.t = len(self.unique_words)
 	def load(self):
-		""" Loads data from the filename """
+		""" Loads data from the filename, should be called before any other method. """
 		npfile = self.filename.replace('.txt','')
 		if os.path.isfile(npfile+'_appearances.npy'):
 			self.probabilities = numpy.load(npfile+'_probabilities.npy')
@@ -41,6 +44,11 @@ class Analysis:
 			self.generate_probabilities()
 			numpy.save(npfile+'_probabilities', self.probabilities)
 	def count(self):
+		"""
+			For every word in the unique words:
+				Counts how many times it is followed by every word that ever follows it.
+			Saves result in appearances.
+		"""
 		cleaned_t = len(self.cleaned)
 		h = 0
 		for i, word in enumerate(self.unique_words):
@@ -55,6 +63,7 @@ class Analysis:
 					# Find the index of the next word and increase its counter by 1.
 					self.appearances[i][ self.unique_words.index( self.cleaned[j + 1] ) ] += 1
 	def normalize(self):
+		""" Makes the result of appearances between 0.0 and 1.0 depending on the total for that particular word """
 		for i in range(self.t):
 			total = sum(self.appearances[i])
 			total = total if total > 0.0 else 1.0
@@ -66,6 +75,12 @@ class Analysis:
 					print self.appearances[i][j]
 					print total
 	def generate_probabilities(self):
+		""" 
+			Fill array of probabilities according to the normalized values of appearances.
+			Each row in probabilities represents a unique word.
+			Each cell in each row of probabilities contains an index of a unique word; and the number of 
+			times that index appears in the row is proportional to how many times it follows that particular word.
+		"""
 		for i in range(self.t):
 			k = 0
 			for j in range(self.t):
@@ -77,10 +92,15 @@ class Analysis:
 						k += 1
 						k = k if k != 100 else 99
 	def obtain_word(self, i):
+		"""
+			Just obtains a random word by accessing the probabilities list.
+			i equals the row = current word.
+		"""
 		k = int( random.random() * 100 )
 		k = k if k != 100 else 99
 		return self.unique_words[ int(self.probabilities[int(i)][int(k)]) ], self.probabilities[int(i)][int(k)]
 	def speak(self, n, start = None):
+		""" Obtains n words, using start as the initial word """
 		if not start:
 			k = int( self.t * random.random() )
 			k = k if k != self.t else self.t-1
@@ -109,6 +129,7 @@ class Analysis:
 					current_index = new_index
 		return ' '.join(final)
 	def speakZarathustra(self, n, start = None):
+		""" Alias for speak() """
 		return self.speak(n, start)
 
 
