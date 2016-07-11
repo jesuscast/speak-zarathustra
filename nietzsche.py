@@ -79,7 +79,7 @@ class Analysis:
 	def obtain_word(self, i):
 		k = int( random.random() * 100 )
 		k = k if k != 100 else 99
-		return self.unique_words[ int(self.probabilities[i][k]) ], self.probabilities[i][k]
+		return self.unique_words[ int(self.probabilities[int(i)][int(k)]) ], self.probabilities[int(i)][int(k)]
 	def speak(self, n, start = None):
 		if not start:
 			k = int( self.t * random.random() )
