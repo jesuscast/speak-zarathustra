@@ -4,8 +4,9 @@ Speak-Zarathustra is a program that let's you obtain Nietzsche like strings.
 Such as:
 ```python
 print Niet.speakZarathustra(20)
->>> god, the which as of all but is that most valuable intuitions are to not he system out a great
+# god, the which as of all but is that most valuable intuitions are to not he system out a great
 ```
+
 It is based on a simple concept called Markov Chains that was trained using the free book of Nietzche "The Antichrist".
 
 ## Instructions
