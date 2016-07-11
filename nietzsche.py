@@ -26,25 +26,27 @@ class Analysis:
 		# Now generate an array of len(self.unique_words) X len(self.unique_words)
 		# to contain the probability of each word being followed by another word.
 		self.t = len(self.unique_words)
-		self.appearances = numpy.zeros( (self.t, self.t) )
-		# Now create an array that is going to hold the probabilities.
-		self.probabilities = numpy.zeros( ( self.t, 100 ) )
 	def load(self):
 		""" Loads data from the filename """
 		npfile = self.filename.replace('.txt','')
 		if os.path.isfile(npfile+'_appearances.npy'):
-			self.appearances = numpy.load(npfile+'_appearances.npy')
 			self.probabilities = numpy.load(npfile+'_probabilities.npy')
-			# print d.generate(100, 'god')
 		else:
+			self.appearances = numpy.zeros( (self.t, self.t) )
+			self.probabilities = numpy.zeros( ( self.t, 100 ) )
+			print 'Counting...'
 			self.count()
+			print 'Normalizing...'
 			self.normalize()
-			numpy.save(npfile+'_appearances', self.appearances)
 			self.generate_probabilities()
 			numpy.save(npfile+'_probabilities', self.probabilities)
 	def count(self):
 		cleaned_t = len(self.cleaned)
+		h = 0
 		for i, word in enumerate(self.unique_words):
+			h += 1
+			if h%1000 == 0:
+				print h
 			for j, word_tmp in enumerate(self.cleaned):
 				# If it is the last one then just skip it
 				if j == (cleaned_t - 1):
@@ -70,7 +72,6 @@ class Analysis:
 				if self.appearances[i][j] != 0.0:
 					tmp = int(self.appearances[i][j]*100)
 					tmp = tmp if tmp != 100 else 99
-					# print str(i)+', '+str(j)+', '+str(tmp)
 					for l in range(tmp):
 						self.probabilities[i][k] = j
 						k += 1
@@ -92,14 +93,20 @@ class Analysis:
 		for i in range(n):
 			final.append(current_word)
 			current_word = ''
+			i = 0
 			while current_word == '':
+				i += 1
 				new_word, new_index = self.obtain_word(current_index)
-				current_index = new_index
 				current_word = new_word
 				if current_word in final:
 					current_word = ''
 				if current_word == 'system':
 					current_word = ''
+				if current_word != '':
+					current_index = new_index
+				if i % 20 == 0:
+					i = 1
+					current_index = new_index
 		return ' '.join(final)
 	def speakZarathustra(self, n, start = None):
 		return self.speak(n, start)
