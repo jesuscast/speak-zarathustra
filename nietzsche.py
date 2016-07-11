@@ -98,6 +98,8 @@ class Analysis:
 				current_word = new_word
 				if current_word in final:
 					current_word = ''
+				if current_word == 'system':
+					current_word = ''
 		return ' '.join(final)
 	def speakZarathustra(self, n, start = None):
 		return self.speak(n, start)
